@@ -6,7 +6,6 @@ import numpy as np
 import base64
 from pydub import AudioSegment
 import io
-import sounddevice as sd
 
 app = Flask(__name__)
 
@@ -70,8 +69,7 @@ def predict():
     audio = AudioSegment.from_file(io.BytesIO(decoded), format="wav")
     samples = audio.get_array_of_samples()
     samples = np.array(samples)
-    sd.default.samplerate = 16000
-    recording = extract_loudest_section(samples, int(1*sd.default.samplerate))
+    recording = extract_loudest_section(samples, int(1*16000))
 
     audio_preprocessed = preprocess_audio(recording)
     recorded_feature = np.expand_dims(audio_preprocessed, 0)
