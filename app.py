@@ -6,6 +6,7 @@ import numpy as np
 import base64
 from pydub import AudioSegment
 import io
+import sounddevice as sd
 
 app = Flask(__name__)
 
@@ -34,6 +35,16 @@ word2index = {
 }
 index2word = [word for word in word2index]
 
+def extract_loudest_section(audio, length):
+    print(audio)
+    audio = audio.astype(np.float) # to avoid integer overflow when squaring
+    print(audio)
+    audio_pw = audio**2 # power
+    window = np.ones((length, ))
+    conv = np.convolve(audio_pw, window, mode="valid")
+    begin_index = conv.argmax()
+    return audio[begin_index:begin_index+length]
+
 def get_model():
     global model
     model = load_model("models/inggris.h5")
@@ -57,13 +68,12 @@ def predict():
     encoded = message['audio']
     decoded = base64.b64decode(encoded)
     audio = AudioSegment.from_file(io.BytesIO(decoded), format="wav")
-    print(audio)
-    #preprocess
-
     samples = audio.get_array_of_samples()
     samples = np.array(samples)
+    sd.default.samplerate = 16000
+    recording = extract_loudest_section(samples, int(1*sd.default.samplerate))
 
-    audio_preprocessed = preprocess_audio(samples)
+    audio_preprocessed = preprocess_audio(recording)
     recorded_feature = np.expand_dims(audio_preprocessed, 0)
     prediction = model.predict(recorded_feature).reshape((20, ))
     prediction /= prediction.sum()
@@ -99,3 +109,8 @@ def predict():
 def home():
     return render_template("home.html")
 
+# if __name__ == '__main__':
+#     # This is used when running locally only. When deploying to Google App
+#     # Engine, a webserver process such as Gunicorn will serve the app.
+#     app.run(host='127.0.0.1', port=8080, debug=True)
+# # [END gae_flex_quickstart]
