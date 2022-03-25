@@ -6,3 +6,4 @@ numpy
 pybase64
 pydub
 scipy
+sounddevice
