@@ -64,7 +64,7 @@
                     audio : base64Audio
                 }
                 console.log(message);
-                $.post("http://127.0.0.1:5000/predict", JSON.stringify(message), function(response){
+                $.post("https://speech-secognition.herokuapp.com/predict", JSON.stringify(message), function(response){
                     $("#label1").text(response.prediction.label1);
                     $("#prob1").text(response.prediction.prob1);
                     $("#label2").text(response.prediction.label2);
