@@ -6,6 +6,9 @@ import numpy as np
 import base64
 from pydub import AudioSegment
 import io
+from werkzeug.utils import secure_filename
+import os
+from scipy.io import wavfile
 
 app = Flask(__name__)
 
@@ -35,9 +38,6 @@ word2index = {
 index2word = [word for word in word2index]
 
 def extract_loudest_section(audio, length):
-    print(audio)
-    audio = audio.astype(np.float) # to avoid integer overflow when squaring
-    print(audio)
     audio_pw = audio**2 # power
     window = np.ones((length, ))
     conv = np.convolve(audio_pw, window, mode="valid")
@@ -50,7 +50,7 @@ def get_model():
     print("Model loaded")
 
 def preprocess_audio(audio):
-    # audio = audio.astype(np.float)
+    audio = audio.astype(np.float)
     # normalize data
     audio=audio.astype('float32')
     audio -= audio.mean()
@@ -61,16 +61,20 @@ def preprocess_audio(audio):
 
 get_model()
 
+UPLOAD_FOLDER = "uploads"
+
+@app.route("/upload")
+#somecode
+
 @app.route("/predict", methods=["POST"])
 def predict():
-    message = request.get_json(force=True)
-    encoded = message['audio']
-    decoded = base64.b64decode(encoded)
-    audio = AudioSegment.from_file(io.BytesIO(decoded), format="wav")
-    samples = audio.get_array_of_samples()
-    samples = np.array(samples)
-    recording = extract_loudest_section(samples, int(1*16000))
+    f = request.files['file']
+    filename = secure_filename(f.filename)
+    f.save(os.path.join(UPLOAD_FOLDER, filename))
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
 
+    samplerate, data = wavfile.read(filepath)
+    recording = extract_loudest_section(data, int(1*16000))
     audio_preprocessed = preprocess_audio(recording)
     recorded_feature = np.expand_dims(audio_preprocessed, 0)
     prediction = model.predict(recorded_feature).reshape((20, ))

@@ -17,36 +17,13 @@
         <p><var id="label1"> :</var> : <span id="prob1"></span></p>
         <p><var id="label2"> :</var> : <span id="prob2"></span></p>
         <p><var id="label3"> :</var> : <span id="prob3"></span></p>
-        <!-- <p>Dog : <span id="dog-prediction"></span></p>
-        <p>Cat : <span id="cat-prediction"></span></p> -->
-
-        <audio id="myAudio">
-            <source src=""/ id="selected-audio" type="audio/wav">
-            Your browser does not support the audio element.
-          </audio>
-          
-          <p>Click the buttons to play or pause the audio.</p>
-          
-          <button onclick="playAudio()" type="button">Play Audio</button>
-          <button onclick="pauseAudio()" type="button">Pause Audio</button> 
-          
-          <script>
-          var x = document.getElementById("myAudio"); 
-          
-          function playAudio() { 
-            x.play(); 
-          } 
-          
-          function pauseAudio() { 
-            x.pause(); 
-          } 
-          </script>
 
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <script>
             let base64Audio;
             $('#audio-selector').change(function(){
                 let reader = new FileReader();
+                console.log("tes  ",reader.result)
                 reader.onload = function(e){
                     let dataURL = reader.result;
                     $('#selected-audio').attr("src", dataURL);
@@ -64,7 +41,8 @@
                     audio : base64Audio
                 }
                 console.log(message);
-                $.post("https://speech-secognition.herokuapp.com/predict", JSON.stringify(message), function(response){
+                // $.post("https://speech-secognition.herokuapp.com/predict", JSON.stringify(message), function(response){
+                $.post("http://127.0.0.1:5000//predict", JSON.stringify(message), function(response){    
                     $("#label1").text(response.prediction.label1);
                     $("#prob1").text(response.prediction.prob1);
                     $("#label2").text(response.prediction.label2);
