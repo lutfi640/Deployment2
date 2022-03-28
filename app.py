@@ -10,6 +10,12 @@ from werkzeug.utils import secure_filename
 import os
 from scipy.io import wavfile
 
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+
 app = Flask(__name__)
 
 word2index = {
@@ -72,6 +78,16 @@ def predict():
     filename = secure_filename(f.filename)
     f.save(os.path.join(UPLOAD_FOLDER, filename))
     filepath = os.path.join(UPLOAD_FOLDER, filename)
+
+    # message = request.get_json(force=True)
+    # encoded = message['audio']
+    # decoded = base64.b64decode(encoded)
+    # audio = AudioSegment.from_file(io.BytesIO(decoded), format="wav")
+    # print(audio)
+    #preprocess
+
+    # samples = audio.get_array_of_samples()
+    # samples = np.array(samples)
 
     samplerate, data = wavfile.read(filepath)
     recording = extract_loudest_section(data, int(1*16000))

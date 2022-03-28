@@ -6,3 +6,5 @@ numpy
 pybase64
 pydub
 scipy
+sounddevice
+libportaudio2
