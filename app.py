@@ -3,33 +3,58 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 import python_speech_features
 import numpy as np
-import base64
+# import base64
 from pydub import AudioSegment
-import io
+# import io
 from werkzeug.utils import secure_filename
 import os
 from scipy.io import wavfile
 
-from tensorflow.compat.v1 import ConfigProto
-from tensorflow.compat.v1 import InteractiveSession
-config = ConfigProto()
-config.gpu_options.allow_growth = True
-session = InteractiveSession(config=config)
+# from tensorflow.compat.v1 import ConfigProto
+# from tensorflow.compat.v1 import InteractiveSession
+# config = ConfigProto()
+# config.gpu_options.allow_growth = True
+# session = InteractiveSession(config=config)
 
 app = Flask(__name__)
 
+# word2index = {
+#     # core words
+#     "yes": 0,
+#     "no": 1,
+#     "up": 2,
+#     "down": 3,
+#     "left": 4,
+#     "right": 5,
+#     "on": 6,
+#     "off": 7,
+#     "stop": 8,
+#     "go": 9,
+#     "zero": 10,
+#     "one": 11,
+#     "two": 12,
+#     "three": 13,
+#     "four": 14,
+#     "five": 15,
+#     "six": 16,
+#     "seven": 17,
+#     "eight": 18,
+#     "nine": 19,
+# }
+# index2word = [word for word in word2index]
+
 word2index = {
     # core words
-    "yes": 0,
-    "no": 1,
-    "up": 2,
+    "cancel": 0,
+    "digit": 1,
+    "direction": 2,
     "down": 3,
     "left": 4,
     "right": 5,
-    "on": 6,
-    "off": 7,
-    "stop": 8,
-    "go": 9,
+    "options": 6,
+    "open": 7,
+    "yes": 8,
+    "no": 9,
     "zero": 10,
     "one": 11,
     "two": 12,
@@ -52,7 +77,7 @@ def extract_loudest_section(audio, length):
 
 def get_model():
     global model
-    model = load_model("models/inggris.h5")
+    model = load_model("models\\05_04_2022__17_38_arab.h5")
     print("Model loaded")
 
 def preprocess_audio(audio):
