@@ -77,7 +77,7 @@ def extract_loudest_section(audio, length):
 
 def get_model():
     global model
-    model = load_model("models\05_04_2022__17_38_arab.h5")
+    model = load_model("models/05_04_2022__17_38_arab.h5")
     print("Model loaded")
 
 def preprocess_audio(audio):
